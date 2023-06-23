@@ -1,19 +1,14 @@
 from enum import Enum
 
-op = None
-
 class ArithmeticLogicalAssembly(Enum):
 
     '''
 
     TYPE_<N> STRUCTURE: 
-
         ( { <cmd: cmd_symbol> }, [ <Assembly Instructions> ] )
 
     TYPE_A: add, sub, and, or
-
     TYPE_B: gt, lt, eq
-
     TYPE_C: not, neg
 
     '''
@@ -23,7 +18,6 @@ class ArithmeticLogicalAssembly(Enum):
                         'add': '+', 'sub': '-',
                         'and': '&', 'or': '|'
                     },
-
                     [
                         '@SP', 'M=M-1', 'A=M',
                         'D=M\t// POP = A, tmp = A', '\n',
@@ -38,7 +32,6 @@ class ArithmeticLogicalAssembly(Enum):
                     {
                         'gt': 'JGT', 'lt': 'JLT', 'eq': 'JEQ'
                     },
-
                     [
                         '@SP', 'M=M-1', 'A=M',
                         'D=M\t// POP = A, tmp = A', '\n',
@@ -57,7 +50,6 @@ class ArithmeticLogicalAssembly(Enum):
                     {
                         'neg': '-', 'not': '!'
                     },
-
                     [
                         '@SP', 'M=M-1', 'A=M',
                         'D={}M\t// {} is a bit-wise operation',
@@ -109,8 +101,8 @@ class CodeWriter:
         elif cmd in ArithmeticLogicalAssembly.TYPE_B.value[0].keys():
             return ArithmeticLogicalAssembly.TYPE_B.value
 
-        # else:
-        #     return ArithmeticLogicalAssembly.TYPE_C.value 
+        elif cmd in ArithmeticLogicalAssembly.TYPE_C.value[0].keys():
+            return ArithmeticLogicalAssembly.TYPE_C.value 
 
         return None
 
