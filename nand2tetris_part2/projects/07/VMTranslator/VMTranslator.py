@@ -1,6 +1,6 @@
 import sys
-import Parser
-import CodeWriter
+import Parser as prs
+import CodeWriter as cdw
 
 
 
@@ -20,9 +20,11 @@ TODO    Input:  fileName.vm
 def main(vmCodeFile):
     asmCodeFile = vmCodeFile[:-3]+".asm"    # To write in this file and return it.
 
-    parser = Parser(vmCodeFile)
+    parser = prs.Parser(vmCodeFile)         # Parse the file and prepare input into pre-defined structure.
+    codeWriter = cdw.CodeWriter(asmCodeFile, parser.vmCMDList)
+    print(parser.vmCMDList)
 
-    return asmCodeFile
+    return 0
 
 
 if __name__ == "__main__":
