@@ -21,10 +21,21 @@ def main(vmCodeFile):
     asmCodeFile = vmCodeFile[:-3]+".asm"    # To write in this file and return it.
 
     parser = prs.Parser(vmCodeFile)         # Parse the file and prepare input into pre-defined structure.
-    codeWriter = cdw.CodeWriter(asmCodeFile, parser.vmCMDList)
+    codeWriter = cdw.CodeWriter(asmCodeFile)
+    convertToAssembly(parser, codeWriter)
+
     print(parser.vmCMDList)
 
     return 0
+
+def convertToAssembly(parser, codeWriter):
+    for vmCmd in parser.vmCMDList:
+        if vmCmd['cmdtype'] == prs.CommandInfo.C_ARITHMETIC:
+            codeWriter.writeArithmetic(vmCmd)
+        elif vmCmd['cmdtype'] == prs.CommandInfo.C_MEMORY:
+            codeWriter.writePushPop(vmCmd)
+        else:
+            pass
 
 
 if __name__ == "__main__":
