@@ -1,6 +1,7 @@
 from enum import Enum
 
-ConditionTag = 1
+ConditionTag_ALATB   =   1
+VariableTag_MEMAPOP  =   1
 
 class ArithmeticLogicalAssembly(Enum):
 
@@ -64,19 +65,60 @@ class ArithmeticLogicalAssembly(Enum):
 
 class MemoryAccessAssembly(Enum):
 
-    PUSH_ASMBLY_CONST   =   [
-                                '@{}', 'D=A\t// D = {}', '\n',
-                                '@SP', 'A=M', 'M=D\t// *SP = D', '\n',
-                                '@SP', 'M=M+1\t// SP++'
-                            ]
+    PUSH_ASMBLY_CONST           =   [
+                                        '@{}', 'D=A\t// D = {}', '\n',
+                                        '@SP', 'A=M', 'M=D\t// *SP = D', '\n',
+                                        '@SP', 'M=M+1\t// SP++'
+                                    ]
 
-    PUSH_ASMBLY_SEG     =   [
-                                '@{0}', 'A=M', 'D=A', '\n',
-                                '@{1}', 'D=D+A\t// *{0} + offset {1}',
-                                'A=D', 'D=M\t// D = RAM[*{0} + {1}]', '\n',
-                                '@SP', 'A=M', 'M=D\t// *SP = D', '\n',
-                                '@SP', 'M=M+1\t// SP++'
-                            ]
+    PUSH_ASMBLY_SEG_TYPE_A     =   [
+                                        '@{0}', 'D=M', '\n',
+                                        '@{1}', 'D=D+A\t// *{0} + offset {1}',
+                                        'A=D', 'D=M\t// D = RAM[*{0} + {1}]', '\n',
+                                        '@SP', 'A=M', 'M=D\t// *SP = D', '\n',
+                                        '@SP', 'M=M+1\t// SP++'
+                                    ]
+    
+    POP_ASMBLY_SEG_TYPE_A      =   [
+                                        '@{0}', 'D=M', '\n',
+                                        '@{1}', 'D=D+A\t// *{0} + offset {1}', '\n',
+                                        '@LOC_{2}', 'M=D\t// Storing the address at LOC_{2}', '\n',
+                                        '@SP', 'M=M-1', 'A=M', 'D=M\t// D = POP (STACK)', '\n',
+                                        '@LOC_{2}', 'A=M', 'M=D\t// Store D @ LOC_{2}' 
+                                    ]
+    
+    PUSH_ASMBLY_SEG_TYPE_B      =   [
+                                        '@{0}', 'D=A', '\n',
+                                        '@{1}', 'D=D+A\t// *{0} + offset {1}',
+                                        'A=D', 'D=M\t// D = RAM[*{0} + {1}]', '\n',
+                                        '@SP', 'A=M', 'M=D\t// *SP = D', '\n',
+                                        '@SP', 'M=M+1\t// SP++'
+                                    ]
+    
+    POP_ASMBLY_SEG_TYPE_B       =   [
+                                        '@{0}', 'D=A', '\n',
+                                        '@{1}', 'D=D+A\t// *{0} + offset {1}', '\n',
+                                        '@LOC_{2}', 'M=D\t// Storing the address at LOC_{2}', '\n',
+                                        '@SP', 'M=M-1', 'A=M', 'D=M\t// D = POP (STACK)', '\n',
+                                        '@LOC_{2}', 'A=M', 'M=D\t// Store D @ LOC_{2}'
+                                    ]
+    
+    MEM_SEG_TYPE_A              =   (
+                                       {
+                                            'local': 'LCL', 'argument': 'ARG',
+                                            'this': 'THIS', 'that': "THAT"
+                                        },
+                                        PUSH_ASMBLY_SEG_TYPE_A,
+                                        POP_ASMBLY_SEG_TYPE_A 
+                                    )
+
+    MEM_SEG_TYPE_B              =   (
+                                        {
+                                            'temp': '5', 'pointer': '3'
+                                        },
+                                        PUSH_ASMBLY_SEG_TYPE_B,
+                                        POP_ASMBLY_SEG_TYPE_B
+                                    )
 
 
 
@@ -94,7 +136,7 @@ class CodeWriter:
 
         _, cmd, _, _ = cmdInfo['cmdtype'], cmdInfo['cmd'], cmdInfo['arg1'], cmdInfo['arg2']
         ALType = self.getArithmeticLogicalType(cmd)
-        global ConditionTag
+        global ConditionTag_ALATB
 
         if ALType is not None:
             op = ALType.value[0][cmd]
@@ -102,11 +144,10 @@ class CodeWriter:
                 if '{}' in instr:    # check for placeholder and format instruction if it exists
                     instr = instr.format(op, op)
                 if '{1}' in instr:
-                    print(instr)
-                    instr = instr.format('', ConditionTag)
+                    instr = instr.format('', ConditionTag_ALATB)
                 self.asmCodeFileHandle.write(instr + '\n')
             self.asmCodeFileHandle.write('\n')
-            ConditionTag += 1
+            ConditionTag_ALATB += 1
 
         else:
             #TODO ERROR
@@ -123,8 +164,6 @@ class CodeWriter:
         elif cmd in ArithmeticLogicalAssembly.TYPE_C.value[0].keys():
             return ArithmeticLogicalAssembly.TYPE_C 
 
-        return None
-
     def writePushPop(self, cmdInfo):
 
         '''
@@ -132,11 +171,38 @@ class CodeWriter:
         cmdInfo = <{'cmdtype': CMDType, 'cmd': cmd, 'arg1': arg1, 'arg2': arg2}>
 
         '''
-
+        
         CMDType, cmd, arg1, arg2 = cmdInfo['cmdtype'], cmdInfo['cmd'], cmdInfo['arg1'], cmdInfo['arg2']
+        global VariableTag_MEMAPOP
 
-        for instr in MemoryAccessAssembly.PUSH_ASMBLY_CONST.value:
-            if '{}' in instr:    # check for placeholder and format instruction if it exists
-                instr = instr.format(arg2)
-            self.asmCodeFileHandle.write(instr + '\n')
+        if cmd == 'push':
+            if arg1 == 'constant':
+                for instr in MemoryAccessAssembly.PUSH_ASMBLY_CONST.value:
+                    if '{}' in instr:    # check for placeholder and format instruction if it exists
+                        instr = instr.format(arg2)
+                    self.asmCodeFileHandle.write(instr + '\n')
+            else:   # local/argument/this/that
+                MSType = self.getMemorySegmentType(arg1)
+                arg1 = MSType.value[0][arg1]
+                for instr in MSType.value[1]:
+                    if ('{0}' in instr) or ('{1}' in instr):    # check for placeholder and format instruction if it exists
+                        instr = instr.format(arg1, arg2)
+                    self.asmCodeFileHandle.write(instr + '\n')
+
+        elif cmd == 'pop':   # pop
+            MSType = self.getMemorySegmentType(arg1)
+            arg1 = MSType.value[0][arg1]
+            for instr in MSType.value[2]:
+                if ('{0}' in instr) or ('{1}' in instr) or ('{2}' in instr):
+                    instr = instr.format(arg1, arg2, VariableTag_MEMAPOP)
+                self.asmCodeFileHandle.write(instr + '\n')
+            VariableTag_MEMAPOP += 1
+
         self.asmCodeFileHandle.write('\n')
+
+    def getMemorySegmentType(self, seg) -> MemoryAccessAssembly:
+        if seg in MemoryAccessAssembly.MEM_SEG_TYPE_A.value[0].keys():
+            return MemoryAccessAssembly.MEM_SEG_TYPE_A
+        elif seg in MemoryAccessAssembly.MEM_SEG_TYPE_B.value[0].keys():
+            return MemoryAccessAssembly.MEM_SEG_TYPE_B
+        

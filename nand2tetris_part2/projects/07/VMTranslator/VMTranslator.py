@@ -23,10 +23,7 @@ def main(vmCodeFile):
     parser = prs.Parser(vmCodeFile)         # Parse the file and prepare input into pre-defined structure.
     codeWriter = cdw.CodeWriter(asmCodeFile)
     convertToAssembly(parser, codeWriter)
-
-    print(parser.vmCMDList)
-
-    return 0
+    print("Translation successfull!\nA new {} assembly file has been generated.".format(asmCodeFile))
 
 def convertToAssembly(parser, codeWriter):
     for vmCmd in parser.vmCMDList:
@@ -47,7 +44,6 @@ if __name__ == "__main__":
 
         print("Translating the VM Code file,", inputFile, " to Hack assembly language...\n")
         main(inputFile)
-        print("Translation successfull!")
         
     else:
         print("Error: Please provide a .vm file.")

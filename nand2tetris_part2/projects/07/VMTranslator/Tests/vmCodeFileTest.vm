@@ -1,11 +1,5 @@
 // Testing VMTranslator
-push constant 27
-push constant 10
 
-
-push constant 10    // COMMENT
-push constant 5
-add
-add
-gt
+pop local 3
+pop local 5
 
