@@ -1,55 +1,7 @@
 import re
 import sys
-from enum import Enum
 from typing import List
-
-
-'''
-Class below describes different types of ERROR.
-'''
-
-class ErrorTypes(Enum):
-    SYNTAX_ERROR = "ERROR: There is a syntax error at line "
-
-'''
-
-CONSTANTS class defined below (More to be added later...)
-
-NOTE Any text beyond the elements mentioned in the CONSTANTS
-class below are INVALID and should terminate execution with
-an ERROR message.
-
-'''
-
-class CommandInfo(Enum):
-
-    #COMMAND LISTS
-    ARITHMETIC_LOGICAL_CMD      =   ['add', 'sub', 'neg', 'eq', 'gt',
-                                    'lt', 'and', 'or', 'not']
-
-    MEMORY_ACCESS_CMD           =   ['push', 'pop']
-
-
-    #VALID ARGUMENT COUNT
-    ARITHMETIC_LOGICAL_ARG_CNT  =   0
-
-    MEMORY_ACCESS_ARG_CNT       =   2
-
-
-    #COMMAND TYPE                   (<ARGUMENT EXPEXTED>, <VALID COMMANDS LIST>)
-    C_ARITHMETIC                =   (ARITHMETIC_LOGICAL_ARG_CNT, ARITHMETIC_LOGICAL_CMD)
-
-    C_MEMORY                    =   (MEMORY_ACCESS_ARG_CNT, MEMORY_ACCESS_CMD)
-
-
-    #VALID NON-TRIVIAL SYMBOLS
-    MEMORY_SEGMENTS             =   ['local', 'argument', 'this',
-                                    'that', 'constant', 'static',
-                                    'pointer', 'temp']
-
-    #VALID TRIVIAL SYMBOLS
-    COMMENT_SYMBOL              =   '//'    # Ignore this symbol and any thing that comes after it.
-
+from Constants import ErrorTypes, CommandInfo
 
 class Parser:
 
