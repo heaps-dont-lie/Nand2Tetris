@@ -80,6 +80,10 @@ class Parser:
             elif CMDType == CommandInfo.C_BRANCHING:
                 #TODO Check if ARG(s) are VALID
                 arg1 = commandList[pos+1]
+
+            elif CMDType == CommandInfo.C_FUNCTION:
+                #TODO Check if ARG(s) are VALID
+                arg1, arg2 = commandList[pos+1], commandList[pos+2]
             
             append_CMD = {'cmdtype': CMDType, 'cmd': cmd, 'arg1': arg1, 'arg2': arg2}
             self.vmCMDList.append(append_CMD)

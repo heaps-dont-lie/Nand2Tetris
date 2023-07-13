@@ -144,6 +144,28 @@ class MemoryAccessAssembly(Enum):
                                         PUSH_ASMBLY_SEG_TYPE_C,
                                         POP_ASMBLY_SEG_TYPE_C
                                     )
+    
+class BranchingConditionAssembly(Enum):
+
+    BRANCHING_ASMBLY_TYPE_A     =   [
+                                        '({0})\t// label declaration command'
+                                    ]
+    
+    BRANCHING_ASMBLY_TYPE_B     =   [
+                                        '@{0}', 
+                                        '0; JMP\t// Jump unconditionally to the label, {0}'
+                                    ]
+    
+    BRANCHING_ASMBLY_TYPE_C     =   [
+                                        '@SP', 'M=M-1', 'A=M', 'D=M\t// Condition =  POP', '\n',
+                                        '@{0}', 'D; JNE\t// Jump to label, {0}, if TRUE'
+                                    ]
+    
+    BRANCHING_ASMBLY            =   {
+                                        'label'     :   BRANCHING_ASMBLY_TYPE_A,
+                                        'goto'      :   BRANCHING_ASMBLY_TYPE_B,
+                                        'if-goto'   :   BRANCHING_ASMBLY_TYPE_C  
+                                    }
 
 
 '''

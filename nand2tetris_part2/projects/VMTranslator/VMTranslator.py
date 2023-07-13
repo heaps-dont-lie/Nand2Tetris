@@ -24,6 +24,7 @@ def main(vmCodeFile):
 
     codeWriter = cdw.CodeWriter(asmCodeFile)
     convertToAssembly(parser, codeWriter)
+    #print(parser.vmCMDList)
     
     print("Translation successfull!\nA new {} assembly file has been generated.".format(asmCodeFile))
 
@@ -33,6 +34,8 @@ def convertToAssembly(parser, codeWriter):
             codeWriter.writeArithmetic(vmCmd)
         elif vmCmd['cmdtype'] == prs.CommandInfo.C_MEMORY:
             codeWriter.writePushPop(vmCmd)
+        elif vmCmd['cmdtype'] == prs.CommandInfo.C_BRANCHING:
+            codeWriter.writeBranchingCondition(vmCmd)
         else:
             pass
 
