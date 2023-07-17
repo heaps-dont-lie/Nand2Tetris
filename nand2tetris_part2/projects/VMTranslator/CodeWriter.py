@@ -1,9 +1,15 @@
 import os
-from Constants import ArithmeticLogicalAssembly, MemoryAccessAssembly, BranchingConditionAssembly, ConditionTag_ALATB, VariableTag_MEMAPOP 
+from Constants import *
 
 class CodeWriter:
-    def __init__(self, asmCodeFile):
-        self.asmCodeFileHandle = open(asmCodeFile, 'w')
+    def __init__(self, asmCodeFile, vmCodeFile_truncated):
+        self.asmCodeFileHandle = open(asmCodeFile, 'a')
+        self.vmCodeFile = vmCodeFile_truncated
+
+    def writeBootstrap(self):
+        for instr in SystemInitializationAssembly.SYS_INIT.value:
+            self.asmCodeFileHandle.write(instr + '\n')
+        self.writeFunction({'cmdtype': CommandInfo.C_FUNCTION, 'cmd': 'call', 'arg1': 'Sys.init', 'arg2': 0})
 
     def writeArithmetic(self, cmdInfo):
 
@@ -63,7 +69,7 @@ class CodeWriter:
             else:   # local/argument/this/that/temp/pointer/static
                 MSType = self.getMemorySegmentType(arg1)
                 if MSType == MemoryAccessAssembly.MEM_SEG_TYPE_C:
-                    arg1 = os.path.basename(self.asmCodeFileHandle.name[:-4])
+                    arg1 = self.vmCodeFile
                 else:
                     arg1 = MSType.value[0][arg1]
                 for instr in MSType.value[1]:
@@ -74,7 +80,7 @@ class CodeWriter:
         elif cmd == 'pop':   # pop
             MSType = self.getMemorySegmentType(arg1)
             if MSType == MemoryAccessAssembly.MEM_SEG_TYPE_C:
-                arg1 = os.path.basename(self.asmCodeFileHandle.name[:-4])
+                arg1 = self.vmCodeFile
             else:
                 arg1 = MSType.value[0][arg1]
             for instr in MSType.value[2]:
@@ -100,12 +106,39 @@ class CodeWriter:
         cmdInfo = <{'cmdtype': CMDType, 'cmd': cmd, 'arg1': arg1, 'arg2': arg2}>
 
         '''
+        global CURRENT_FUNCTION
+
         _, cmd, arg1, _ = cmdInfo['cmdtype'], cmdInfo['cmd'], cmdInfo['arg1'], cmdInfo['arg2']
 
         for instr in BranchingConditionAssembly.BRANCHING_ASMBLY.value[cmd]:
-            if '{0}' in instr:
-                instr = instr.format(arg1)
+            if ('{0}' in instr) or ('{1}' in instr):
+                instr = instr.format(arg1, CURRENT_FUNCTION)
             self.asmCodeFileHandle.write(instr + '\n')
         self.asmCodeFileHandle.write('\n')
+
+    def writeFunction(self, cmdInfo):
+        '''
+
+        cmdInfo = <{'cmdtype': CMDType, 'cmd': cmd, 'arg1': arg1, 'arg2': arg2}>
+
+        '''
+        _, cmd, arg1, arg2 = cmdInfo['cmdtype'], cmdInfo['cmd'], cmdInfo['arg1'], cmdInfo['arg2']
+        global FunctionTag_CALL
+        global FunctionTag_SETUP
+        global CURRENT_FUNCTION
+
+        for instr in FunctionAssembly.FUNCTION_ASMBLY.value[cmd]:
+            if ('{0}' in instr) or ('{1}' in instr) or ('{2}' in instr):
+                instr = instr.format(FunctionTag_CALL if cmd=='call' else FunctionTag_SETUP, arg1, arg2)
+            self.asmCodeFileHandle.write(instr + '\n')
+        self.asmCodeFileHandle.write('\n')
+
+        if cmd == 'call':
+            FunctionTag_CALL += 1
+        elif cmd == 'function':
+            CURRENT_FUNCTION = arg1
+            FunctionTag_SETUP += 1
+        elif cmd == 'return':
+            pass
 
         

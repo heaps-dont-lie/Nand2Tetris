@@ -1,3 +1,101 @@
+//Bootstrap code
+
+
+@256
+D=A
+
+
+@SP
+M=D
+
+
+@Sys.init$ret.1
+D=A
+
+
+@SP
+A=M
+M=D
+@SP
+M=M+1	// PUSH Return Address
+
+
+@LCL
+D=M
+
+
+@SP
+A=M
+M=D
+@SP
+M=M+1	// PUSH LCL
+
+
+@ARG
+D=M
+
+
+@SP
+A=M
+M=D
+@SP
+M=M+1	// PUSH ARG
+
+
+@THIS
+D=M
+
+
+@SP
+A=M
+M=D
+@SP
+M=M+1	// PUSH THIS
+
+
+@THAT
+D=M
+
+
+@SP
+A=M
+M=D
+@SP
+M=M+1	// PUSH THAT
+
+
+@SP
+D=M	// D = SP
+
+
+@5
+D=D-A	// D = SP - 5
+
+
+@0
+D=D-A	// D = SP - 5 - nArgs
+
+
+@ARG
+M=D	// ARG = SP - 5 - nArgs
+
+
+@SP
+D=M	// D = SP
+
+
+@LCL
+M=D	// LCL = SP
+
+
+@Sys.init
+0; JMP
+
+
+(Sys.init$ret.1)
+
+
+
 (SimpleFunction.test)
 
 
@@ -9,12 +107,12 @@ D=A
 M=D	// COUNT = nVars
 
 
-(SimpleFunction.test_SETUP_1)
+(SimpleFunction.test$SETUP.1)
 @COUNT
 D=M
 
 
-@EXIT_SimpleFunction.test_SETUP_1
+@SimpleFunction.test$EXIT_SETUP.1
 D; JEQ	// Jump if COUNT==0
 
 
@@ -35,11 +133,11 @@ M=M+1	// PUSH 0
 M=M-1	// COUNT--
 
 
-@SimpleFunction.test_SETUP_1
+@SimpleFunction.test$SETUP.1
 0; JMP
 
 
-(EXIT_SimpleFunction.test_SETUP_1)
+(SimpleFunction.test$EXIT_SETUP.1)
 
 
 
@@ -216,7 +314,10 @@ D=M	// D = POP (STACK)
 
 @LOC_FUNC_TEMP
 A=M
-M=D	// Store D @ LOC_FUNC_TEMP@ARG
+M=D	// Store D @ LOC_FUNC_TEMP
+
+
+@ARG
 D=M+1	// D = ARG + 1
 
 
@@ -226,7 +327,8 @@ M=D	// SP = ARG + 1
 
 @ENDFRAME
 D=M
-D=D-1
+@1
+D=D-A
 A=D
 D=M	// D = *(ENDFRAME - 1)
 @THAT
@@ -235,7 +337,8 @@ M=D	// THAT = *(ENDFRAME - 1)
 
 @ENDFRAME
 D=M
-D=D-2
+@2
+D=D-A
 A=D
 D=M	// D = *(ENDFRAME - 2)
 @THIS
@@ -244,7 +347,8 @@ M=D	// THIS = *(ENDFRAME - 2)
 
 @ENDFRAME
 D=M
-D=D-3
+@3
+D=D-A
 A=D
 D=M	// D = *(ENDFRAME - 3)
 @ARG
@@ -253,7 +357,8 @@ M=D	// ARG = *(ENDFRAME - 3)
 
 @ENDFRAME
 D=M
-D=D-4
+@4
+D=D-A
 A=D
 D=M	// D = *(ENDFRAME - 4)
 @LCL
@@ -261,5 +366,6 @@ M=D	// LCL = *(ENDFRAME - 4)
 
 
 @RETURN
+A=M
 0; JMP	// goto RETURN
 
