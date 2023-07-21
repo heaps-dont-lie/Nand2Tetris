@@ -1,0 +1,16 @@
+function Main.main 1
+push constant 5
+push constant 0
+call GameManager.new 2
+pop local 0
+push local 0
+call GameManager.init 1
+pop temp 0
+push constant 5000
+call Sys.wait 1
+pop temp 0
+push local 0
+call GameManager.dispose 1
+pop temp 0
+push constant 0
+return

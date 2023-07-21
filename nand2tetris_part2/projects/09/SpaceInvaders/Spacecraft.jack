@@ -1,0 +1,73 @@
+class Spacecraft {
+    field int row, col;
+
+    constructor Spacecraft new(int x, int y) {
+        let row = x;
+        let col = y;
+        do draw();
+        return this; 
+    }
+
+    method void draw() {
+        var int location;
+        var int memAddress;
+        let location = (32*row) + (col/16);
+        let memAddress = 16384+location;
+
+        do Memory.poke(memAddress+0, 384);
+        do Memory.poke(memAddress+32, 576);
+        do Memory.poke(memAddress+64, 1056);
+        do Memory.poke(memAddress+96, 2064);
+        do Memory.poke(memAddress+128, 2064);
+        do Memory.poke(memAddress+160, 7128);
+        do Memory.poke(memAddress+192, 10324);
+        do Memory.poke(memAddress+224, 18514);
+        do Memory.poke(memAddress+256, 11220);
+        do Memory.poke(memAddress+288, 6680);
+        do Memory.poke(memAddress+320, 2576);
+        do Memory.poke(memAddress+352, 7128);
+        do Memory.poke(memAddress+384, 10260);
+        do Memory.poke(memAddress+416, 18450);
+        do Memory.poke(memAddress+448, 30750);
+        do Memory.poke(memAddress+480, 4080);
+        return;
+    }
+
+    method void erase() {
+        var int location;
+        var int i;
+        var int memAddress;
+        let location = (32*row) + (col/16);
+        let memAddress = 16384+location;
+        let i = 0;
+
+        while (i < 16) {
+            do Memory.poke(memAddress+(32*i), 0);
+            let i = i + 1;
+        }
+        return;
+    }
+
+    method void moveLeft() {
+        if (col > 1) {
+         do erase();
+         let col = col - 2;
+         do draw();
+      }
+      return;
+    }
+
+    method void moveRight() {
+      if (col < 498) {
+         do erase();
+         let col = col + 2;
+         do draw();
+      }
+      return;
+   }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

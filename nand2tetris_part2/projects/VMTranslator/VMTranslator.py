@@ -7,7 +7,7 @@ import CodeWriter as cdw
 '''
 CONSTANTS
 '''
-BOOTSTRAP_FLAG = True
+BOOTSTRAP_FLAG = False
 
 '''
 

@@ -1,0 +1,10 @@
+class Main {
+    function void main() {
+        var GameManager gm;
+        let gm = GameManager.new(5, 0);
+        do gm.init();
+        do Sys.wait(5000);
+        do gm.dispose();
+        return;
+    }
+}

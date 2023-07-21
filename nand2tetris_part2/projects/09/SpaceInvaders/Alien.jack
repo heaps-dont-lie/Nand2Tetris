@@ -1,0 +1,59 @@
+class Alien {
+    /** Alien's position in 2D Cartesian space. */
+    field int row, col;
+
+    constructor Alien new(int x, int y){
+        let row = x;
+        let col = y;
+
+        /* Renders Alien on the screen @ location. */
+        do draw();
+        
+        return this; 
+    }
+
+    method void draw() {
+        var int location;
+        var int memAddress;
+        let location = (32*row) + (col/16);
+        let memAddress = 16384+location;
+
+        do Memory.poke(memAddress+0, 384);
+        do Memory.poke(memAddress+32, 576);
+        do Memory.poke(memAddress+64, 1440);
+        do Memory.poke(memAddress+96, 2064);
+        do Memory.poke(memAddress+128, 8184);
+        do Memory.poke(memAddress+160, 8196);
+        do Memory.poke(memAddress+192, 16386);
+        do Memory.poke(memAddress+224, -30047);
+        do Memory.poke(memAddress+256, -31407);
+        do Memory.poke(memAddress+288, 16386);
+        do Memory.poke(memAddress+320, 8196);
+        do Memory.poke(memAddress+352, 8184);
+        do Memory.poke(memAddress+384, 0);
+        do Memory.poke(memAddress+416, 0);
+        do Memory.poke(memAddress+448, 0);
+        do Memory.poke(memAddress+480, 0);
+        return;
+    }
+
+    method void erase() {
+        var int location;
+        var int i;
+        var int memAddress;
+        let location = (32*row) + (col/16);
+        let memAddress = 16384+location;
+        let i = 0;
+
+        while (i < 16) {
+            do Memory.poke(memAddress+(32*i), 0);
+            let i = i + 1;
+        }
+        return;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

@@ -1,0 +1,79 @@
+class GameManager {
+    field int alienCount;           // Number of aliens to be setup.
+    field int playerDir;            // left or right
+    static Array alienLocation;     // Stores location of all the Aliens.
+    static Spacecraft player;        // Info of the Space ship. 
+
+    constructor GameManager new(int count, int dir) {
+        let alienCount = count;
+        let playerDir = dir;
+        return this;
+    }
+
+    method void init() {
+        do setupAliens(alienCount);
+        do setupPlayer();
+        do play();
+        return;
+    }
+
+    method void setupAliens(int alienCount) {
+        var int i;
+        let alienLocation = Array.new(alienCount);
+        let i = 0;
+        while(i < alienCount) {
+            let alienLocation[i] = Alien.new(50, 50*(i+2));
+            let i = i + 1;
+        }
+        return;
+    }
+
+    method void setupPlayer() {
+        let player = Spacecraft.new(150, 50);
+        return;
+    }
+
+    method void play() {
+        var char key; // start(M)/stop(S) 
+        var boolean exit;
+        let exit = false;
+
+        while (~exit) {
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+                do moveSpacecraft();
+            }
+
+            if (key = 130) { let playerDir = 2; }   // left arrow
+            if (key = 132) { let playerDir = 1; }   // right arrow
+
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+                do moveSpacecraft();
+            }
+        }
+        return;
+    }
+
+    method void moveSpacecraft() {
+        if (playerDir = 1) { do player.moveRight(); }
+        if (playerDir = 2) { do player.moveLeft(); }
+        do Sys.wait(5);
+        return;
+    }
+
+    method void dispose() {
+        var Alien alien;
+        var int i;
+        let i = 0;
+        while (i < alienCount) {
+            let alien = alienLocation[i];
+            do alien.dispose();
+            let i = i + 1;
+        }
+        do player.dispose();
+
+        do Memory.deAlloc(this);
+        return;
+    }
+}

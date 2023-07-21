@@ -1,0 +1,217 @@
+function Spacecraft.new 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push argument 1
+pop this 1
+push pointer 0
+call Spacecraft.draw 1
+pop temp 0
+push pointer 0
+return
+function Spacecraft.draw 2
+push argument 0
+pop pointer 0
+push constant 32
+push this 0
+call Math.multiply 2
+push this 1
+push constant 16
+call Math.divide 2
+add
+pop local 0
+push constant 16384
+push local 0
+add
+pop local 1
+push local 1
+push constant 0
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 32
+add
+push constant 576
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 64
+add
+push constant 1056
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 96
+add
+push constant 2064
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 128
+add
+push constant 2064
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 160
+add
+push constant 7128
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 192
+add
+push constant 10324
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 224
+add
+push constant 18514
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 256
+add
+push constant 11220
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 288
+add
+push constant 6680
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 320
+add
+push constant 2576
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 352
+add
+push constant 7128
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 384
+add
+push constant 10260
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 416
+add
+push constant 18450
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 448
+add
+push constant 30750
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 480
+add
+push constant 4080
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function Spacecraft.erase 3
+push argument 0
+pop pointer 0
+push constant 32
+push this 0
+call Math.multiply 2
+push this 1
+push constant 16
+call Math.divide 2
+add
+pop local 0
+push constant 16384
+push local 0
+add
+pop local 2
+push constant 0
+pop local 1
+label WHILE_EXP0
+push local 1
+push constant 16
+lt
+not
+if-goto WHILE_END0
+push local 2
+push constant 32
+push local 1
+call Math.multiply 2
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Spacecraft.moveLeft 0
+push argument 0
+pop pointer 0
+push this 1
+push constant 1
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call Spacecraft.erase 1
+pop temp 0
+push this 1
+push constant 2
+sub
+pop this 1
+push pointer 0
+call Spacecraft.draw 1
+pop temp 0
+label IF_FALSE0
+push constant 0
+return
+function Spacecraft.moveRight 0
+push argument 0
+pop pointer 0
+push this 1
+push constant 498
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call Spacecraft.erase 1
+pop temp 0
+push this 1
+push constant 2
+add
+pop this 1
+push pointer 0
+call Spacecraft.draw 1
+pop temp 0
+label IF_FALSE0
+push constant 0
+return
+function Spacecraft.dispose 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
